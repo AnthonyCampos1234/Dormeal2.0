@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		196B1D8C2CD9D90D0039F8A1 /* RiveRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = 196B1D8B2CD9D90D0039F8A1 /* RiveRuntime */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		196B1D542CD9D8980039F8A1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -29,20 +33,42 @@
 		196B1D5D2CD9D8980039F8A1 /* DormealAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DormealAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		196B1DB42CD9D9D40039F8A1 /* Exceptions for "frontend" folder in "DormealApp" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				DormealAppTests/DormealAppTests.swift,
+				DormealAppUITests/DormealAppUITests.swift,
+				DormealAppUITests/DormealAppUITestsLaunchTests.swift,
+			);
+			target = 196B1D422CD9D8970039F8A1 /* DormealApp */;
+		};
+		196B1DB52CD9D9D40039F8A1 /* Exceptions for "frontend" folder in "DormealAppTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				DormealAppTests/DormealAppTests.swift,
+			);
+			target = 196B1D522CD9D8980039F8A1 /* DormealAppTests */;
+		};
+		196B1DBB2CD9D9D70039F8A1 /* Exceptions for "frontend" folder in "DormealAppUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				DormealAppUITests/DormealAppUITests.swift,
+				DormealAppUITests/DormealAppUITestsLaunchTests.swift,
+			);
+			target = 196B1D5C2CD9D8980039F8A1 /* DormealAppUITests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		196B1D452CD9D8970039F8A1 /* DormealApp */ = {
+		196B1D8D2CD9D9CB0039F8A1 /* frontend */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = DormealApp;
-			sourceTree = "<group>";
-		};
-		196B1D562CD9D8980039F8A1 /* DormealAppTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = DormealAppTests;
-			sourceTree = "<group>";
-		};
-		196B1D602CD9D8980039F8A1 /* DormealAppUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = DormealAppUITests;
+			exceptions = (
+				196B1DB42CD9D9D40039F8A1 /* Exceptions for "frontend" folder in "DormealApp" target */,
+				196B1DB52CD9D9D40039F8A1 /* Exceptions for "frontend" folder in "DormealAppTests" target */,
+				196B1DBB2CD9D9D70039F8A1 /* Exceptions for "frontend" folder in "DormealAppUITests" target */,
+			);
+			path = frontend;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -52,6 +78,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				196B1D8C2CD9D90D0039F8A1 /* RiveRuntime in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,9 +102,8 @@
 		196B1D3A2CD9D8970039F8A1 = {
 			isa = PBXGroup;
 			children = (
-				196B1D452CD9D8970039F8A1 /* DormealApp */,
-				196B1D562CD9D8980039F8A1 /* DormealAppTests */,
-				196B1D602CD9D8980039F8A1 /* DormealAppUITests */,
+				196B1D8D2CD9D9CB0039F8A1 /* frontend */,
+				196B1D8A2CD9D90D0039F8A1 /* Frameworks */,
 				196B1D442CD9D8970039F8A1 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -90,6 +116,13 @@
 				196B1D5D2CD9D8980039F8A1 /* DormealAppUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		196B1D8A2CD9D90D0039F8A1 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -108,10 +141,11 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				196B1D452CD9D8970039F8A1 /* DormealApp */,
+				196B1D8D2CD9D9CB0039F8A1 /* frontend */,
 			);
 			name = DormealApp;
 			packageProductDependencies = (
+				196B1D8B2CD9D90D0039F8A1 /* RiveRuntime */,
 			);
 			productName = DormealApp;
 			productReference = 196B1D432CD9D8970039F8A1 /* DormealApp.app */;
@@ -129,9 +163,6 @@
 			);
 			dependencies = (
 				196B1D552CD9D8980039F8A1 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				196B1D562CD9D8980039F8A1 /* DormealAppTests */,
 			);
 			name = DormealAppTests;
 			packageProductDependencies = (
@@ -152,9 +183,6 @@
 			);
 			dependencies = (
 				196B1D5F2CD9D8980039F8A1 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				196B1D602CD9D8980039F8A1 /* DormealAppUITests */,
 			);
 			name = DormealAppUITests;
 			packageProductDependencies = (
@@ -195,6 +223,9 @@
 			);
 			mainGroup = 196B1D3A2CD9D8970039F8A1;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				196B1D892CD9D9010039F8A1 /* XCRemoteSwiftPackageReference "rive-ios" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 196B1D442CD9D8970039F8A1 /* Products */;
 			projectDirPath = "";
@@ -395,7 +426,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"DormealApp/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"frontend/DormealApp/Preview Content\"";
 				DEVELOPMENT_TEAM = HW2MTW777S;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -424,7 +455,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"DormealApp/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"frontend/DormealApp/Preview Content\"";
 				DEVELOPMENT_TEAM = HW2MTW777S;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -558,6 +589,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		196B1D892CD9D9010039F8A1 /* XCRemoteSwiftPackageReference "rive-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/rive-app/rive-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.3.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		196B1D8B2CD9D90D0039F8A1 /* RiveRuntime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 196B1D892CD9D9010039F8A1 /* XCRemoteSwiftPackageReference "rive-ios" */;
+			productName = RiveRuntime;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 196B1D3B2CD9D8970039F8A1 /* Project object */;
 }
