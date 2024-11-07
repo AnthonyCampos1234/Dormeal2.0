@@ -12,21 +12,37 @@ struct ContentView: View {
     @StateObject private var appState = AppState()
     @State private var selectedTab = 0
     @State private var isLoading = true
+    @State private var showOnboarding = true
     
     var body: some View {
         ZStack {
-            // Main app content
-            MainTabView(selectedTab: $selectedTab)
-                .environmentObject(appState)
+            if showOnboarding {
+                // Onboarding flow
+                NavigationStack {
+                    PhoneNumberEnterView(showOnboarding: $showOnboarding)
+                }
                 .opacity(isLoading ? 0 : 1)
+            } else {
+                // Main app content
+                MainTabView(selectedTab: $selectedTab)
+                    .environmentObject(appState)
+                    .opacity(isLoading ? 0 : 1)
+            }
             
             // Loading screen
             if isLoading {
                 SplashScreenView()
+                    .transition(.opacity)
+                    .ignoresSafeArea()
             }
         }
         .onAppear {
-            // Adjust this time to match your animation duration
+            // Ensure keyboard is dismissed during loading
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), 
+                                         to: nil, 
+                                         from: nil, 
+                                         for: nil)
+            
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.50) {
                 withAnimation(.easeOut(duration: 0.3)) {
                     isLoading = false

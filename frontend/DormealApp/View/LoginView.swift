@@ -32,4 +32,11 @@ struct LoginView: View {
             Text(appState.errorMessage ?? "")
         }
     }
-} 
+}
+
+struct LoginView_Preview: PreviewProvider {
+    static var previews: some View {
+        LoginView()
+            .environmentObject(AppState())
+    }
+}
