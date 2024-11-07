@@ -17,16 +17,6 @@ struct User: Codable {
     let phoneNumber: String
 }
 
-// Menu-related structures
-struct RestaurantMenu: Codable {
-    let id: String
-    let restaurantName: String
-    let location: String
-    let logo: String
-    let sections: [MenuSection]
-    let schools: [School]
-}
-
 struct MenuSection: Codable {
     let id: String
     let name: String

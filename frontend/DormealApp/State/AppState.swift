@@ -7,6 +7,7 @@ class AppState: ObservableObject {
     @Published var isAuthenticated = true
     @Published var isLoading = false
     @Published var errorMessage: String?
+    @Published var showCarrierOnboarding = true
     
     func login(email: String, password: String) async {
         isLoading = true
@@ -28,7 +29,14 @@ class AppState: ObservableObject {
     func addToCart(item: Item, menu: RestaurantMenu) {
         // Initialize cart if needed
         if cart == nil {
-            cart = Cart(id: UUID().uuidString, menu: RestaurantMenu(id: menu.id, restaurantName: menu.restaurantName, location: menu.location, logo: menu.logo, sections: [], schools: []), items: [], totalPrice: 0)
+            cart = Cart(id: UUID().uuidString, menu: RestaurantMenu(
+                id: menu.id,
+                restaurantName: menu.restaurantName,
+                logo: menu.logo,
+                location: menu.location,
+                categories: menu.categories,
+                menu: []  // Empty menu since we're just using it for cart reference
+            ), items: [], totalPrice: 0)
         }
         
         // Add item and update total price

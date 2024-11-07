@@ -24,7 +24,7 @@ struct ContentView: View {
                 .opacity(isLoading ? 0 : 1)
             } else {
                 // Main app content
-                MainTabView(selectedTab: $selectedTab)
+                MainTabView(selectedTab: $selectedTab, showCarrierOnboarding: $appState.showCarrierOnboarding)
                     .environmentObject(appState)
                     .opacity(isLoading ? 0 : 1)
             }
@@ -83,6 +83,8 @@ struct SplashScreenView: View {
 
 struct MainTabView: View {
     @Binding var selectedTab: Int
+    @Binding var showCarrierOnboarding: Bool
+    @State private var hideTabBar = false
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -90,40 +92,51 @@ struct MainTabView: View {
                 HomeView()
                     .tag(0)
                 
-                CarrierView()
+                CarrierView(showCarrierOnboarding: $showCarrierOnboarding, hideTabBar: $hideTabBar)
                     .tag(1)
                 
                 ProfileView()
                     .tag(2)
             }
             
-            HStack(spacing: 0) {
-                Spacer()
-                // Home Tab Button
-                TabButton(
-                    imageName: "home",
-                    isSelected: selectedTab == 0,
-                    action: { selectedTab = 0 }
+            // Tab bar with visibility control
+            if selectedTab != 1 || !hideTabBar {
+                HStack(spacing: 0) {
+                    Spacer()
+                    // Home Tab Button
+                    TabButton(
+                        imageName: "home",
+                        isSelected: selectedTab == 0,
+                        action: { selectedTab = 0 }
+                    )
+                    
+                    // Carrier Tab Button
+                    TabButton(
+                        imageName: "order",
+                        isSelected: selectedTab == 1,
+                        action: { selectedTab = 1 }
+                    )
+                    
+                    // Profile Tab Button
+                    TabButton(
+                        imageName: "user",
+                        isSelected: selectedTab == 2,
+                        action: { selectedTab = 2 }
+                    )
+                    Spacer()
+                }
+                .frame(height: 50)
+                .padding(.vertical, 8)
+                .background(
+                    Rectangle()
+                        .fill(.clear)
+                        .background(.ultraThinMaterial)
+                        .overlay(Color.white.opacity(0.95))
+                        .edgesIgnoringSafeArea(.bottom)
                 )
-                
-                // Carrier Tab Button
-                TabButton(
-                    imageName: "order",
-                    isSelected: selectedTab == 1,
-                    action: { selectedTab = 1 }
-                )
-                
-                // Profile Tab Button
-                TabButton(
-                    imageName: "user",
-                    isSelected: selectedTab == 2,
-                    action: { selectedTab = 2 }
-                )
-                Spacer()
+                .animation(.interpolatingSpring(mass: 0.5, stiffness: 200, damping: 12, initialVelocity: 0.8), value: selectedTab)
+                .transition(.move(edge: .bottom))
             }
-            .padding(.vertical, 10)
-            .background(Color(.systemBackground))
-            .animation(.interpolatingSpring(mass: 0.5, stiffness: 200, damping: 12, initialVelocity: 0.8), value: selectedTab)
         }
         .onChange(of: selectedTab) { _ in
             let impact = UIImpactFeedbackGenerator(style: .light)
@@ -140,18 +153,13 @@ struct TabButton: View {
     
     var body: some View {
         Button(action: action) {
-            VStack {
-                Spacer().frame(height: 60)
-                Image(isSelected ? "\(imageName)_filled" : "\(imageName)_outline")
-                    .scaleEffect(isSelected ? 1.0 : 0.9)
-                    .animation(.spring(response: 0.3, dampingFraction: 0.5).repeatCount(1, autoreverses: true), value: isSelected)
-                Spacer().frame(height: 10)
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: 80)
-            .contentShape(Rectangle())
+            Image(isSelected ? "\(imageName)_filled" : "\(imageName)_outline")
+                .scaleEffect(isSelected ? 1.0 : 0.9)
+                .animation(.spring(response: 0.3, dampingFraction: 0.5).repeatCount(1, autoreverses: true), value: isSelected)
+                .frame(maxWidth: .infinity)
+                .frame(height: 44)
+                .contentShape(Rectangle())
         }
-        .frame(maxWidth: .infinity)
     }
 }
 

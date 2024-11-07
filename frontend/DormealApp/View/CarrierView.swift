@@ -6,6 +6,8 @@ struct CarrierView: View {
     @State private var isLoading = false
     @State private var errorMessage: String?
     @State private var showingCompletedOrders = false
+    @Binding var showCarrierOnboarding: Bool
+    @Binding var hideTabBar: Bool
     
     private func loadOrders() async {
         isLoading = true
@@ -18,39 +20,44 @@ struct CarrierView: View {
     }
     
     var body: some View {
-        NavigationStack {
-            VStack {
-                if isLoading {
-                    ProgressView()
-                } else if orders.isEmpty {
-                    EmptyOrdersView()
-                } else {
-                    List {
-                        ForEach(orders, id: \.id) { order in
-                            OrderCard(order: order)
+        if showCarrierOnboarding {
+            CarrierOnboardingView(showCarrierOnboarding: $showCarrierOnboarding, 
+                                hideTabBar: $hideTabBar)
+        } else {
+            NavigationStack {
+                VStack {
+                    if isLoading {
+                        ProgressView()
+                    } else if orders.isEmpty {
+                        EmptyOrdersView()
+                    } else {
+                        List {
+                            ForEach(orders, id: \.id) { order in
+                                OrderCard(order: order)
+                            }
                         }
-                    }
-                    .listStyle(InsetGroupedListStyle())
-                }
-            }
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(action: {
-                        withAnimation(.smooth) {
-                            showingCompletedOrders.toggle()
-                        }
-                    }) {
-                        Image(showingCompletedOrders ? "checkmark_filled" : "checkmark_outline")
-                            .foregroundColor(.primary)
-                            .animation(.smooth, value: showingCompletedOrders)
+                        .listStyle(InsetGroupedListStyle())
                     }
                 }
-            }
-            .sheet(isPresented: $showingCompletedOrders) {
-                CompletedOrdersView()
-            }
-            .task {
-                await loadOrders()
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button(action: {
+                            withAnimation(.smooth) {
+                                showingCompletedOrders.toggle()
+                            }
+                        }) {
+                            Image(showingCompletedOrders ? "checkmark_filled" : "checkmark_outline")
+                                .foregroundColor(.primary)
+                                .animation(.smooth, value: showingCompletedOrders)
+                        }
+                    }
+                }
+                .sheet(isPresented: $showingCompletedOrders) {
+                    CompletedOrdersView()
+                }
+                .task {
+                    await loadOrders()
+                }
             }
         }
     }
@@ -132,6 +139,7 @@ struct OrderCard: View {
 }
 
 #Preview {
-    CarrierView()
+    CarrierView(showCarrierOnboarding: .constant(true), 
+                hideTabBar: .constant(false))
         .environmentObject(AppState())
 } 

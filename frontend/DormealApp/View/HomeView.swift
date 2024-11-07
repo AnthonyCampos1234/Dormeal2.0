@@ -52,11 +52,7 @@ struct HomeView: View {
     
     private func loadMenus() async {
         isLoading = true
-        do {
-            menus = try await APIService.shared.fetchMenus()
-        } catch {
-            errorMessage = "Failed to load restaurants: \(error.localizedDescription)"
-        }
+        menus = RestaurantDataService.loadRestaurantData()
         isLoading = false
     }
     
@@ -110,6 +106,15 @@ struct HomeView: View {
                     }
                 }
             })
+            .toolbarBackground(.clear, for: .navigationBar)
+            .overlay(
+                Rectangle()
+                    .fill(.white.opacity(0.95))
+                    .frame(height: UIApplication.shared.windows.first?.safeAreaInsets.top ?? 0 + 44)
+                    .ignoresSafeArea()
+                    .allowsHitTesting(false)
+                , alignment: .top
+            )
             .sheet(isPresented: $showingCart) {
                 CartView()
             }
@@ -124,60 +129,6 @@ struct HomeView: View {
                 await loadMenus()
             }
         }
-    }
-}
-
-struct RestaurantCard: View {
-    let menu: RestaurantMenu
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            // Restaurant Image
-            AsyncImage(url: URL(string: menu.logo)) { image in
-                image.resizable()
-            } placeholder: {
-                Rectangle()
-                    .fill(Color.gray.opacity(0.3))
-                    .overlay(
-                        Image(systemName: "photo")
-                            .font(.largeTitle)
-                            .foregroundColor(.gray)
-                    )
-            }
-            .frame(height: 200)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            
-            // Restaurant Info
-            VStack(alignment: .leading, spacing: 8) {
-                Text(menu.restaurantName)
-                    .font(.title3)
-                    .fontWeight(.bold)
-                
-                HStack {
-                    Image(systemName: "mappin.circle")
-                    Text(menu.location)
-                }
-                
-                // Tags for food categories
-                HStack {
-                    ForEach(["American", "Grill"], id: \.self) { category in
-                        Text(category)
-                            .font(.caption)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(Color.gray.opacity(0.1))
-                            .cornerRadius(8)
-                    }
-                }
-                
-                .font(.subheadline)
-                .foregroundColor(.gray)
-            }
-        }
-        .padding()
-        .background(Color.white)
-        .cornerRadius(16)
-        .shadow(radius: 5)
     }
 }
 
