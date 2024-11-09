@@ -14,7 +14,7 @@ struct RestaurantMenu: Codable, Identifiable {
             location: "123 College Ave",
             categories: ["American", "Burgers", "Fast Food"],
             menu: [
-                MenuItem(id: "1-1", name: "Classic Burger", price: 8.99, description: "Fresh beef patty with lettuce, tomato, and special sauce", category: "Burgers")
+                MenuItem(id: "1-1", name: "Classic Burger", price: 8.99, description: "Fresh beef patty with lettuce, tomato, and special sauce", category: "Burgers", imageUrl: "https://example.com/classic-burger.jpg")
             ]
         )
     }
@@ -26,4 +26,5 @@ struct MenuItem: Codable, Identifiable {
     let price: Double
     let description: String
     let category: String
+    let imageUrl: String
 } 
