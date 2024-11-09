@@ -12,14 +12,16 @@
           "name": "Classic Burger",
           "price": 8.99,
           "description": "Fresh beef patty with lettuce, tomato, and special sauce",
-          "category": "Burgers"
+          "category": "Burgers",
+          "imageUrl": "https://picsum.photos/200/200?burger"
         },
         {
           "id": "1-2",
           "name": "Cheese Fries",
           "price": 4.99,
           "description": "Crispy fries topped with melted cheddar",
-          "category": "Sides"
+          "category": "Sides",
+          "imageUrl": "https://picsum.photos/200/200?fries"
         }
       ]
     },
@@ -35,7 +37,8 @@
           "name": "Margherita Pizza",
           "price": 12.99,
           "description": "Fresh tomatoes, mozzarella, and basil",
-          "category": "Pizza"
+          "category": "Pizza",
+          "imageUrl": "https://picsum.photos/200/200?pizza1"
         }
       ]
     },
@@ -51,7 +54,8 @@
           "name": "Margherita Pizza",
           "price": 12.99,
           "description": "Fresh tomatoes, mozzarella, and basil",
-          "category": "Pizza"
+          "category": "Pizza",
+          "imageUrl": "https://picsum.photos/200/200?pizza2"
         }
       ]
     },
@@ -67,41 +71,44 @@
           "name": "Margherita Pizza",
           "price": 12.99,
           "description": "Fresh tomatoes, mozzarella, and basil",
-          "category": "Pizza"
+          "category": "Pizza",
+          "imageUrl": "https://picsum.photos/200/200?pizza3"
         }
       ]
     },
     {
-        "id": "5",
-        "restaurantName": "Pizza Palace",
-        "logo": "https://example.com/pizza-palace-logo.jpg",
-        "location": "456 University Blvd",
-        "categories": ["Italian", "Pizza", "Pasta"],
-        "menu": [
-          {
-            "id": "2-1",
-            "name": "Margherita Pizza",
-            "price": 12.99,
-            "description": "Fresh tomatoes, mozzarella, and basil",
-            "category": "Pizza"
-          }
-        ]
-      },
-      {
-        "id": "6",
-        "restaurantName": "Pizza Palace",
-        "logo": "https://example.com/pizza-palace-logo.jpg",
-        "location": "456 University Blvd",
-        "categories": ["Italian", "Pizza", "Pasta"],
-        "menu": [
-          {
-            "id": "2-1",
-            "name": "Margherita Pizza",
-            "price": 12.99,
-            "description": "Fresh tomatoes, mozzarella, and basil",
-            "category": "Pizza"
-          }
-        ]
-      }
+      "id": "5",
+      "restaurantName": "Pizza Palace",
+      "logo": "https://example.com/pizza-palace-logo.jpg",
+      "location": "456 University Blvd",
+      "categories": ["Italian", "Pizza", "Pasta"],
+      "menu": [
+        {
+          "id": "2-1",
+          "name": "Margherita Pizza",
+          "price": 12.99,
+          "description": "Fresh tomatoes, mozzarella, and basil",
+          "category": "Pizza",
+          "imageUrl": "https://picsum.photos/200/200?pizza4"
+        }
+      ]
+    },
+    {
+      "id": "6",
+      "restaurantName": "Pizza Palace",
+      "logo": "https://example.com/pizza-palace-logo.jpg",
+      "location": "456 University Blvd",
+      "categories": ["Italian", "Pizza", "Pasta"],
+      "menu": [
+        {
+          "id": "2-1",
+          "name": "Margherita Pizza",
+          "price": 12.99,
+          "description": "Fresh tomatoes, mozzarella, and basil",
+          "category": "Pizza",
+          "imageUrl": "https://picsum.photos/200/200?pizza5"
+        }
+      ]
+    }
   ]
 } 

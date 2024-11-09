@@ -1,85 +1,89 @@
 import SwiftUI
 
 struct RestaurantDetailView: View {
+    @Environment(\.dismiss) private var dismiss
     let menu: RestaurantMenu
+    @State private var selectedCategory: String?
+    @Namespace private var namespace
     
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                // Header with restaurant image
-                AsyncImage(url: URL(string: menu.logo)) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                } placeholder: {
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.3))
-                        .overlay(
-                            Image(systemName: "photo")
-                                .font(.largeTitle)
-                                .foregroundColor(.gray)
-                        )
+        VStack(spacing: 0) {
+            // Custom navigation bar
+            HStack {
+                Button(action: { dismiss() }) {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 20))
+                        .foregroundColor(.black)
                 }
-                .frame(height: 200)
-                .clipped()
                 
-                // Restaurant info section
-                VStack(alignment: .leading, spacing: 12) {
-                    Text(menu.restaurantName)
-                        .font(.title)
-                        .fontWeight(.bold)
-                    
-                    HStack {
-                        Image(systemName: "mappin.circle.fill")
-                            .foregroundColor(.red)
-                        Text(menu.location)
-                    }
-                    .foregroundColor(.gray)
-                    
-                    // Categories
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack {
-                            ForEach(menu.categories, id: \.self) { category in
-                                Text(category)
-                                    .font(.caption)
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 6)
-                                    .background(Color.gray.opacity(0.1))
-                                    .cornerRadius(20)
+                Spacer()
+                
+                Text(menu.restaurantName)
+                    .font(.title2)
+                    .fontWeight(.bold)
+                
+                Spacer()
+            }
+            .padding()
+            
+            // Categories scroll view
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 32) {
+                    ForEach(menu.categories, id: \.self) { category in
+                        VStack(spacing: 4) {
+                            Text(category)
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(selectedCategory == category ? .black : .gray)
+                                .padding(.horizontal, 4)
+                            
+                            // Underline indicator
+                            if selectedCategory == category {
+                                Rectangle()
+                                    .frame(height: 3)
+                                    .foregroundColor(.black)
+                                    .matchedGeometryEffect(id: "underline", in: namespace)
+                            } else {
+                                Rectangle()
+                                    .frame(height: 3)
+                                    .foregroundColor(.clear)
+                            }
+                        }
+                        .onTapGesture {
+                            withAnimation(.spring()) {
+                                selectedCategory = category
                             }
                         }
                     }
                 }
                 .padding(.horizontal)
-                
-                // Menu items
+            }
+            .overlay(
+                Divider(),
+                alignment: .bottom
+            )
+            
+            // Menu items
+            ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    Text("Menu")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .padding(.horizontal)
-                    
                     ForEach(menu.menu) { item in
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text(item.name)
-                                .font(.headline)
-                            Text(item.description)
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
-                            Text("$\(String(format: "%.2f", item.price))")
-                                .font(.subheadline)
-                                .fontWeight(.semibold)
-                        }
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.gray.opacity(0.1))
-                        .cornerRadius(12)
-                        .padding(.horizontal)
+                        MenuItemView(
+                            item: item,
+                            onAddPress: {
+                                // Add your plus button action here
+                            }
+                        )
                     }
                 }
+                .padding(.top)
             }
         }
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarHidden(true)
+        .onAppear {
+            // Set the first category as selected when view appears
+            if selectedCategory == nil && !menu.categories.isEmpty {
+                selectedCategory = menu.categories[0]
+            }
+        }
     }
 }
 

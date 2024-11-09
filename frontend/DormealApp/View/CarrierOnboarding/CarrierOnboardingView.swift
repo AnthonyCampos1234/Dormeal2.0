@@ -12,7 +12,7 @@ struct CarrierOnboardingView: View {
                 VStack(spacing: 20) {
                     Spacer()
                     
-                    Image("delivery_illustration")
+                    Image("food_delivery_icon")
                         .resizable()
                         .scaledToFit()
                         .frame(height: 200)

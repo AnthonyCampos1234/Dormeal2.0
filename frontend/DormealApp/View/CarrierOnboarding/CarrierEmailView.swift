@@ -50,6 +50,7 @@ struct CarrierEmailView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button {
+                    hideTabBar = false
                     dismiss()
                 } label: {
                     HStack(spacing: 4) {
