@@ -24,7 +24,7 @@ struct MenuItemDetailView: View {
                     
                     Button(action: { dismiss() }) {
                         Image(systemName: "xmark.circle.fill")
-                            .font(.system(size: 32))
+                            .font(.system(size: 31))
                             .foregroundColor(.white)
                             .shadow(radius: 2)
                     }
