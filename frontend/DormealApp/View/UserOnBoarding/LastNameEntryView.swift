@@ -1,48 +1,52 @@
+//
+//  LastNameEntryView.swift
+//  DormealApp
+//
+//  Created by Anthony Campos on 11/16/24.
+//
+
 import SwiftUI
 
-struct ConfirmationCodeView: View {
-    @Environment(\.dismiss) private var dismiss
-    @State private var confirmationCode: String = ""
+struct LastNameEntryView: View {
+    @State private var firstName: String = ""
+    @State private var lastName: String = ""
     @Binding var showOnboarding: Bool
-    @FocusState private var isCodeFieldFocused: Bool
+    @FocusState private var isFirstNameFocused: Bool
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         ZStack {
             Color.white.ignoresSafeArea()
             
             VStack(alignment: .leading, spacing: 20) {
-                Text("Enter verification code")
+                Text("Enter your last name")
                     .font(.system(size: 32, weight: .bold))
-                    .padding(.top, 80)
-                    .padding(.horizontal)
-                
-                Text("Enter the 6-digit code sent to your phone")
-                    .font(.system(size: 16))
-                    .foregroundColor(.gray)
+                    .padding(.top, 30)
                     .padding(.horizontal)
 
-                TextField("000000", text: $confirmationCode)
-                    .font(.system(size: 24))
-                    .keyboardType(.numberPad)
-                    .textFieldStyle(PlainTextFieldStyle())
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal)
-                    .focused($isCodeFieldFocused)
+                VStack(spacing: 16) {
+                    TextField("Last Name", text: $firstName)
+                        .font(.system(size: 24))
+                        .textFieldStyle(PlainTextFieldStyle())
+                        .padding(.horizontal)
+                        .focused($isFirstNameFocused)
+                }
 
                 Spacer()
             }
         }
         .safeAreaInset(edge: .bottom) {
-            NavigationLink {
-                NameEntryView(showOnboarding: $showOnboarding)
+            Button {
+                showOnboarding = false
             } label: {
-                Text("Verify")
+                Text("Next")
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(Color.black)
+                    .background(firstName.isEmpty ? Color.gray : Color.black)
                     .foregroundColor(.white)
                     .cornerRadius(25)
             }
+            .disabled(firstName.isEmpty)
             .padding(.horizontal)
             .padding(.bottom, 40)
             .background(Color.white)
@@ -63,10 +67,10 @@ struct ConfirmationCodeView: View {
                 }
             }
         }
-        .onAppear { isCodeFieldFocused = true }
+        .onAppear { isFirstNameFocused = true }
     }
-} 
+}
 
 #Preview {
-    ConfirmationCodeView(showOnboarding: .constant(true))
+    LastNameEntryView(showOnboarding: .constant(true))
 }

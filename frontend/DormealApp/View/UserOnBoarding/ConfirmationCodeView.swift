@@ -1,41 +1,41 @@
 import SwiftUI
 
-struct CarrierCodeView: View {
+struct ConfirmationCodeView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var confirmationCode: String = ""
-    @State private var navigateToSlides = false
-    @Binding var showCarrierOnboarding: Bool
-    @Binding var hideTabBar: Bool
+    @Binding var showOnboarding: Bool
     @FocusState private var isCodeFieldFocused: Bool
+    private let maxDigits = 6
     
     var body: some View {
         ZStack {
             Color.white.ignoresSafeArea()
             
             VStack(alignment: .leading, spacing: 20) {
-                Text("Enter verification code")
+                Text("Please enter your 6-digit confirmation code")
                     .font(.system(size: 32, weight: .bold))
-                    .padding(.top, 80)
-                    .padding(.horizontal)
-                
-                Text("Enter the 6-digit code sent to your email")
-                    .font(.system(size: 16))
-                    .foregroundColor(.gray)
+                    .padding(.top, 30)
                     .padding(.horizontal)
 
-                TextField("000000", text: $confirmationCode)
+                TextField("Confirmation Code", text: $confirmationCode)
                     .font(.system(size: 24))
                     .keyboardType(.numberPad)
                     .textFieldStyle(PlainTextFieldStyle())
-                    .multilineTextAlignment(.center)
+                    .multilineTextAlignment(.leading)
                     .padding(.horizontal)
                     .focused($isCodeFieldFocused)
+                    .onChange(of: confirmationCode) {
+                        newValue in
+                        if newValue.count > maxDigits {
+                            confirmationCode = String(newValue.prefix(maxDigits))
+                        }
+                    }
                 Spacer()
             }
         }
         .safeAreaInset(edge: .bottom) {
-            Button {
-                navigateToSlides = true
+            NavigationLink {
+                FirstNameEntryView(showOnboarding: $showOnboarding)
             } label: {
                 Text("Verify")
                     .frame(maxWidth: .infinity)
@@ -44,7 +44,6 @@ struct CarrierCodeView: View {
                     .foregroundColor(.white)
                     .cornerRadius(25)
             }
-            .buttonStyle(PlainButtonStyle())
             .padding(.horizontal)
             .padding(.bottom, 40)
             .background(Color.white)
@@ -55,7 +54,7 @@ struct CarrierCodeView: View {
                 Button {
                     dismiss()
                 } label: {
-                    HStack(spacing: 4) {
+                    HStack {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 16, weight: .semibold))
                         Text("Back")
@@ -66,11 +65,9 @@ struct CarrierCodeView: View {
             }
         }
         .onAppear { isCodeFieldFocused = true }
-        .navigationDestination(isPresented: $navigateToSlides) {
-            CarrierInfoSlidesView(
-                showCarrierOnboarding: $showCarrierOnboarding,
-                hideTabBar: $hideTabBar
-            )
-        }
     }
 } 
+
+#Preview {
+    ConfirmationCodeView(showOnboarding: .constant(true))
+}

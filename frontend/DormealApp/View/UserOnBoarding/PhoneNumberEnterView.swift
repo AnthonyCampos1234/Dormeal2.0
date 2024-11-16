@@ -11,27 +11,32 @@ struct PhoneNumberEnterView: View {
     @State private var phoneNumber: String = ""
     @Binding var showOnboarding: Bool
     @FocusState private var isPhoneFieldFocused: Bool
+    private let numberLimit = 10
     
     var body: some View {
         ZStack {
             Color.white.ignoresSafeArea()
             
             VStack(alignment: .leading, spacing: 20) {
-                // Title with larger font and more padding
                 Text("Enter your phone")
                     .font(.system(size: 32, weight: .bold))
                     .padding(.top, 80)
                     .padding(.horizontal)
 
-                // Phone input with darker styling
                 HStack(spacing: 8) {
                     Text("+1")
-                        .font(.system(size: 18))
+                        .font(.system(size: 24))
                     TextField("Mobile Number", text: $phoneNumber)
-                        .font(.system(size: 18))
+                        .font(.system(size: 24))
                         .keyboardType(.phonePad)
                         .textFieldStyle(PlainTextFieldStyle())
                         .focused($isPhoneFieldFocused)
+                        .onChange(of: phoneNumber) {
+                            newValue in
+                            if newValue.count > numberLimit {
+                                phoneNumber = String(newValue.prefix(numberLimit))
+                            }
+                        }
                 }
                 .padding(.horizontal)
 
@@ -54,7 +59,7 @@ struct PhoneNumberEnterView: View {
                     Text("Next")
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
-                        .background(phoneNumber.isEmpty ? Color.gray : Color.black)
+                        .background(phoneNumber.count == numberLimit ? Color.black : Color.gray)
                         .foregroundColor(.white)
                         .cornerRadius(25)
                 }
@@ -66,8 +71,8 @@ struct PhoneNumberEnterView: View {
         }
         .onAppear { 
             // Delay focusing until after animation
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.8) {
-                isPhoneFieldFocused = true 
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.3) {
+                isPhoneFieldFocused = true
             }
         }
     }

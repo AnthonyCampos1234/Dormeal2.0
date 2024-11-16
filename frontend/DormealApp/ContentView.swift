@@ -125,7 +125,7 @@ struct MainTabView: View {
                     )
                     Spacer()
                 }
-                .frame(height: 50)
+                .frame(height: 30)
                 .padding(.vertical, 8)
                 .background(
                     Rectangle()
