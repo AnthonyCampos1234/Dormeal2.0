@@ -11,6 +11,7 @@ struct PhoneNumberEnterView: View {
     @State private var phoneNumber: String = ""
     @Binding var showOnboarding: Bool
     @FocusState private var isPhoneFieldFocused: Bool
+    @State private var navigateToConfirmation = false
     private let numberLimit = 10
     
     var body: some View {
@@ -53,24 +54,20 @@ struct PhoneNumberEnterView: View {
                         .padding(.horizontal)
                 }
 
-                NavigationLink {
-                    ConfirmationCodeView(showOnboarding: $showOnboarding)
-                } label: {
-                    Text("Next")
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(phoneNumber.count == numberLimit ? Color.black : Color.gray)
-                        .foregroundColor(.white)
-                        .cornerRadius(25)
+                PrimaryButton(
+                    title: "Next",
+                    isDisabled: phoneNumber.count != numberLimit
+                ) {
+                    navigateToConfirmation = true
                 }
-                .disabled(phoneNumber.isEmpty)
-                .padding(.horizontal)
+                .background(Color.white)
             }
-            .padding(.bottom, 40)
             .background(Color.white)
         }
+        .navigationDestination(isPresented: $navigateToConfirmation) {
+            ConfirmationCodeView(showOnboarding: $showOnboarding)
+        }
         .onAppear { 
-            // Delay focusing until after animation
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.3) {
                 isPhoneFieldFocused = true
             }

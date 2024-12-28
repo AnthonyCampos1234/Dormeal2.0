@@ -1,3 +1,5 @@
+import Foundation
+
 // Basic structures
 struct School: Codable {
     let id: String
@@ -23,7 +25,7 @@ struct MenuSection: Codable {
     let items: [Item]
 }
 
-struct Item: Codable {
+struct Item: Identifiable, Codable {
     let id: String
     let name: String
     let basePrice: Double
@@ -31,6 +33,7 @@ struct Item: Codable {
     let additionalsSections: [AdditionalsSection]
     let choicesSections: [ChoicesSection]
     let icon: String
+    var selectedOptions: [String] = [] 
 }
 
 struct AddonsSection: Codable {
@@ -64,6 +67,11 @@ struct AdditionalsSection: Codable {
 }
 
 // Order-related structures
+enum DeliveryMethod: String, Codable {
+    case handoff
+    case dropoff
+}
+
 struct Order: Codable {
     let id: String
     let cart: Cart
@@ -73,6 +81,13 @@ struct Order: Codable {
     let user: User?
     let location: String
     let totalPrice: Double
+    let carrierPayout: Double
+    let deliveryMethod: DeliveryMethod
+    let createdAt: Date
+    
+    enum CodingKeys: String, CodingKey {
+        case id, cart, building, carrier, status, user, location, totalPrice, carrierPayout, deliveryMethod, createdAt
+    }
 }
 
 struct Cart: Codable {
@@ -87,4 +102,5 @@ struct Carrier: Codable {
     let user: User
     let currentLocation: String
     let orders: [Order]
-} 
+}
+

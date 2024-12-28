@@ -92,7 +92,7 @@ struct MainTabView: View {
                 HomeView()
                     .tag(0)
                 
-                CarrierView(showCarrierOnboarding: $showCarrierOnboarding, hideTabBar: $hideTabBar)
+                CarrierView(hideTabBar: $hideTabBar)
                     .tag(1)
                 
                 ProfileView()

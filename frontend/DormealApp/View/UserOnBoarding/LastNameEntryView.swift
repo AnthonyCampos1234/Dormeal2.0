@@ -21,11 +21,11 @@ struct LastNameEntryView: View {
             VStack(alignment: .leading, spacing: 20) {
                 Text("Enter your last name")
                     .font(.system(size: 32, weight: .bold))
-                    .padding(.top, 30)
+                    .padding(.top, 80)
                     .padding(.horizontal)
 
                 VStack(spacing: 16) {
-                    TextField("Last Name", text: $firstName)
+                    TextField("Last Name", text: $lastName)
                         .font(.system(size: 24))
                         .textFieldStyle(PlainTextFieldStyle())
                         .padding(.horizontal)
@@ -36,37 +36,15 @@ struct LastNameEntryView: View {
             }
         }
         .safeAreaInset(edge: .bottom) {
-            Button {
+            PrimaryButton(
+                title: "Next",
+                isDisabled: lastName.isEmpty
+            ) {
                 showOnboarding = false
-            } label: {
-                Text("Next")
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
-                    .background(firstName.isEmpty ? Color.gray : Color.black)
-                    .foregroundColor(.white)
-                    .cornerRadius(25)
             }
-            .disabled(firstName.isEmpty)
-            .padding(.horizontal)
-            .padding(.bottom, 40)
             .background(Color.white)
         }
         .navigationBarBackButtonHidden(true)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button {
-                    dismiss()
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 16, weight: .semibold))
-                        Text("Back")
-                            .font(.system(size: 16, weight: .regular))
-                    }
-                    .foregroundColor(.black)
-                }
-            }
-        }
         .onAppear { isFirstNameFocused = true }
     }
 }

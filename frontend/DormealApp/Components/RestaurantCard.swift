@@ -25,20 +25,19 @@ struct RestaurantCard: View {
                 
                 // Restaurant Info
                 Text(menu.restaurantName)
-                    .font(.headline)
-                    .foregroundColor(.black)
+                    .font(.system(size: 18))
+                    .foregroundColor(.white)
                     .fontWeight(.semibold)
                 
                 Spacer()
                 
                 Image(systemName: "chevron.right")
                     .font(.caption2)
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
             }
             .padding(8)
-            .background(Color(UIColor.systemBackground))
+            .background(Color.black)
             .cornerRadius(8)
-            .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
         }
     }
 }

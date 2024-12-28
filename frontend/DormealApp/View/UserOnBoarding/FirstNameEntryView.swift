@@ -13,6 +13,7 @@ struct FirstNameEntryView: View {
     @Binding var showOnboarding: Bool
     @FocusState private var isFirstNameFocused: Bool
     @Environment(\.dismiss) private var dismiss
+    @State private var navigateToLastName = false
     
     var body: some View {
         ZStack {
@@ -21,7 +22,7 @@ struct FirstNameEntryView: View {
             VStack(alignment: .leading, spacing: 20) {
                 Text("Enter your first name")
                     .font(.system(size: 32, weight: .bold))
-                    .padding(.top, 30)
+                    .padding(.top, 80)
                     .padding(.horizontal)
 
                 VStack(spacing: 16) {
@@ -36,36 +37,17 @@ struct FirstNameEntryView: View {
             }
         }
         .safeAreaInset(edge: .bottom) {
-            NavigationLink {
-                LastNameEntryView(showOnboarding: $showOnboarding)
-            } label: {
-                Text("Next")
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
-                    .background(firstName.isEmpty ? Color.gray : Color.black)
-                    .foregroundColor(.white)
-                    .cornerRadius(25)
+            PrimaryButton(
+                title: "Next",
+                isDisabled: firstName.isEmpty
+            ) {
+                navigateToLastName = true
             }
-            .disabled(firstName.isEmpty)
-            .padding(.horizontal)
-            .padding(.bottom, 40)
             .background(Color.white)
         }
         .navigationBarBackButtonHidden(true)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button {
-                    dismiss()
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 16, weight: .semibold))
-                        Text("Back")
-                            .font(.system(size: 16, weight: .regular))
-                    }
-                    .foregroundColor(.black)
-                }
-            }
+        .navigationDestination(isPresented: $navigateToLastName) {
+            LastNameEntryView(showOnboarding: $showOnboarding)
         }
         .onAppear { isFirstNameFocused = true }
     }

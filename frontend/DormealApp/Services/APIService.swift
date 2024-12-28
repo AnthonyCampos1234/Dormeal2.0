@@ -43,31 +43,20 @@ class APIService {
     
     // Submit order with cart details
     func submitOrder(cart: Cart, building: Building, location: String) async throws -> Order {
-        guard let url = URL(string: "\(baseURL)/orders") else {
-            throw APIError.invalidURL
-        }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        // Create a proper encodable struct for the request
-        struct OrderRequest: Encodable {
-            let cart: Cart
-            let building: Building
-            let location: String
-        }
-        
-        let orderRequest = OrderRequest(cart: cart, building: building, location: location)
-        request.httpBody = try JSONEncoder().encode(orderRequest)
-        
-        let (data, response) = try await URLSession.shared.data(for: request)
-        
-        if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 201 {
-            throw APIError.networkError
-        }
-        
-        return try JSONDecoder().decode(Order.self, from: data)
+        // Mock implementation for now
+        return Order(
+            id: UUID().uuidString,
+            cart: cart,
+            building: building,
+            carrier: nil,
+            status: "pending",
+            user: nil,
+            location: location,
+            totalPrice: cart.totalPrice,
+            carrierPayout: 3.99,
+            deliveryMethod: .dropoff,
+            createdAt: Date()
+        )
     }
     
     // Authentication methods

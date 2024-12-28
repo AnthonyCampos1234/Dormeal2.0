@@ -89,6 +89,23 @@ struct RestaurantDetailView: View {
 
 #Preview {
     NavigationView {
-        RestaurantDetailView(menu: RestaurantMenu.example)
+        RestaurantDetailView(menu: RestaurantMenu(
+            id: "1",
+            restaurantName: "Burger Haven",
+            logo: "https://example.com/burger-haven-logo.jpg",
+            location: "123 College Ave",
+            categories: ["Burgers", "Sides", "Drinks"],
+            menu: [
+                MenuItem(
+                    id: "1",
+                    name: "Classic Burger",
+                    price: 8.99,
+                    description: "Fresh beef patty with lettuce, tomato, and special sauce",
+                    category: "Burgers",
+                    imageUrl: "https://example.com/classic-burger.jpg",
+                    optionGroups: [] // Add empty array for preview
+                )
+            ]
+        ))
     }
 } 

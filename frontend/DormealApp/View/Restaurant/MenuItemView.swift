@@ -52,4 +52,19 @@ struct MenuItemView: View {
         }
         .padding(.horizontal)
     }
+}
+
+#Preview {
+    MenuItemView(
+        item: MenuItem(
+            id: "1",
+            name: "Classic Burger",
+            price: 12.99,
+            description: "Juicy beef patty with lettuce, tomato, and cheese",
+            category: "Burgers",
+            imageUrl: "https://example.com/burger.jpg",
+            optionGroups: []
+        ),
+        onAddPress: {}
+    )
 } 

@@ -1,24 +1,26 @@
 import SwiftUI
 
-struct CarrierInfoSlidesView: View {
+struct CarrierTutorialView: View {
     @Environment(\.dismiss) private var dismiss
     @Binding var showCarrierOnboarding: Bool
     @Binding var hideTabBar: Bool
     @State private var currentPage = 0
+    @State private var navigateToNext = false
+    var onBecomeCarrier: () -> Void
     
     private let slides = [
-        OnboardingSlide(
-            image: "carrier_earnings",
+        TutorialSlide(
+            image: "order_filled",
             title: "Earn Money",
             description: "Make up to $25/hour delivering food on campus"
         ),
-        OnboardingSlide(
-            image: "carrier_schedule",
+        TutorialSlide(
+            image: "location_outline",
             title: "Flexible Schedule",
             description: "Choose when you want to work. No minimum hours required"
         ),
-        OnboardingSlide(
-            image: "carrier_campus",
+        TutorialSlide(
+            image: "order_outline",
             title: "Stay on Campus",
             description: "All deliveries are within campus boundaries"
         )
@@ -64,59 +66,36 @@ struct CarrierInfoSlidesView: View {
                 }
                 .padding(.bottom, 20)
                 
-                Button {
+                PrimaryButton(
+                    title: currentPage == slides.count - 1 ? "Get Started" : "Next",
+                    isDisabled: false
+                ) {
                     if currentPage < slides.count - 1 {
                         withAnimation {
                             currentPage += 1
                         }
                     } else {
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            dismiss()
-                            showCarrierOnboarding = false
-                            hideTabBar = false
-                        }
+                        showCarrierOnboarding = false
+                        hideTabBar = false
+                        onBecomeCarrier()
                     }
-                } label: {
-                    Text(currentPage == slides.count - 1 ? "Get Started" : "Next")
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(Color.black)
-                        .foregroundColor(.white)
-                        .cornerRadius(25)
                 }
-                .padding(.horizontal)
-                .padding(.bottom, 40)
             }
         }
         .navigationBarBackButtonHidden(true)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button {
-                    dismiss()
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 16, weight: .semibold))
-                        Text("Back")
-                            .font(.system(size: 16, weight: .regular))
-                    }
-                    .foregroundColor(.black)
-                }
-            }
-        }
     }
 }
 
-// Helper struct for slide data
-private struct OnboardingSlide {
+private struct TutorialSlide {
     let image: String
     let title: String
     let description: String
 }
 
 #Preview {
-    CarrierInfoSlidesView(
+    CarrierTutorialView(
         showCarrierOnboarding: .constant(true),
-        hideTabBar: .constant(false)
+        hideTabBar: .constant(true),
+        onBecomeCarrier: {}
     )
 } 
