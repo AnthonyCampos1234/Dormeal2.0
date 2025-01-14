@@ -62,7 +62,7 @@ struct OrderDetailsSheet: View {
                 .foregroundColor(.gray)
             
             HStack(spacing: 12) {
-                AsyncImage(url: URL(string: order.cart.menu.logo)) { image in
+                AsyncImage(url: URL(string: order.cart.restaurant.imageUrl)) { image in
                     image.resizable()
                 } placeholder: {
                     Color.gray.opacity(0.3)
@@ -71,11 +71,11 @@ struct OrderDetailsSheet: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
                 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(order.cart.menu.restaurantName)
+                    Text(order.cart.restaurant.name)
                         .font(.title3)
                         .fontWeight(.semibold)
                         .foregroundColor(.white)
-                    Text(order.cart.menu.location)
+                    Text(order.cart.restaurant.address)
                         .font(.subheadline)
                         .foregroundColor(.gray)
                 }
@@ -108,16 +108,17 @@ struct OrderDetailsSheet: View {
                 .foregroundColor(.gray)
             
             ForEach(order.cart.items, id: \.id) { item in
-                HStack {
-                    Text("1x")
-                        .foregroundColor(.gray)
-                    Text(item.name)
-                        .foregroundColor(.white)
-                    Spacer()
-                    Text("$\(item.basePrice, specifier: "%.2f")")
-                        .foregroundColor(.gray)
+                HStack(spacing: 12) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(item.menuItem.name)
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.white)
+                        Text("1x")
+                            .foregroundColor(.gray)
+                        Text("$\(item.itemTotal, specifier: "%.2f")")
+                            .foregroundColor(.gray)
+                    }
                 }
-                .font(.system(.body, design: .rounded))
             }
         }
     }

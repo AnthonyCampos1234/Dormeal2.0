@@ -24,7 +24,7 @@ struct ContentView: View {
                 .opacity(isLoading ? 0 : 1)
             } else {
                 // Main app content
-                MainTabView(selectedTab: $selectedTab, showCarrierOnboarding: $appState.showCarrierOnboarding)
+                MainTabView(selectedTab: $selectedTab)
                     .environmentObject(appState)
                     .opacity(isLoading ? 0 : 1)
             }
@@ -83,8 +83,6 @@ struct SplashScreenView: View {
 
 struct MainTabView: View {
     @Binding var selectedTab: Int
-    @Binding var showCarrierOnboarding: Bool
-    @State private var hideTabBar = false
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -92,15 +90,15 @@ struct MainTabView: View {
                 HomeView()
                     .tag(0)
                 
-                CarrierView(hideTabBar: $hideTabBar)
+                CarrierView()
                     .tag(1)
                 
                 ProfileView()
                     .tag(2)
             }
             
-            // Tab bar with visibility control
-            if selectedTab != 1 || !hideTabBar {
+            // Tab bar
+            if selectedTab != 1 {
                 HStack(spacing: 0) {
                     Spacer()
                     // Home Tab Button

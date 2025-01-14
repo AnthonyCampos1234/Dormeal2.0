@@ -11,7 +11,7 @@ struct OrderCard: View {
         VStack(alignment: .leading, spacing: 12) {
             // Restaurant Info
             HStack {
-                AsyncImage(url: URL(string: order.cart.menu.logo)) { image in
+                AsyncImage(url: URL(string: order.cart.restaurant.imageUrl)) { image in
                     image.resizable()
                 } placeholder: {
                     Color.gray.opacity(0.3)
@@ -20,7 +20,7 @@ struct OrderCard: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
                 
                 VStack(alignment: .leading) {
-                    Text(order.cart.menu.restaurantName)
+                    Text(order.cart.restaurant.name)
                         .font(.headline)
                         .foregroundColor(.white)
                     Text(order.building.name)
@@ -43,7 +43,7 @@ struct OrderCard: View {
             
             // Order Items
             ForEach(order.cart.items, id: \.id) { item in
-                Text(item.name)
+                Text(item.menuItem.name)
                     .font(.subheadline)
                     .foregroundColor(.white)
             }

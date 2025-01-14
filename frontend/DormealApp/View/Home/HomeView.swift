@@ -5,14 +5,32 @@ struct HomeView: View {
     @State private var showingCart = false
     @State private var isLoading = false
     @State private var errorMessage: String?
-    @State private var menus: [RestaurantMenu] = []
-    @State private var customerName = "John Doe"
+    @State private var restaurants: [Restaurant] = []
     @State private var totalSavings = 25.50
+    @EnvironmentObject var appState: AppState
+    @State private var showingCheckout = false
     
     // MARK: - Private Methods
-    private func loadMenus() async {
+    private func loadRestaurants() async {
         isLoading = true
-        menus = RestaurantDataService.loadRestaurantData()
+        errorMessage = nil
+        
+        do {
+            guard let userId = appState.user?.id else {
+                errorMessage = "User not found"
+                isLoading = false
+                return
+            }
+            
+            restaurants = try await APIService.shared.fetchRestaurants(userId: userId)
+        } catch APIError.notFound {
+            errorMessage = "No restaurants found for your school"
+        } catch APIError.serverError {
+            errorMessage = "An unexpected error occurred. Please try again later"
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+        
         isLoading = false
     }
     
@@ -61,9 +79,12 @@ struct HomeView: View {
             .overlay(navigationBarBackground, alignment: .top)
             .sheet(isPresented: $showingCart) {
                 CartView()
+                    .sheet(isPresented: $showingCheckout) {
+                        CheckoutView()
+                    }
             }
             .task {
-                await loadMenus()
+                await loadRestaurants()
             }
         }
     }
@@ -74,9 +95,13 @@ struct HomeView: View {
             LazyVStack(spacing: 16) {
                 if isLoading {
                     ProgressView()
+                } else if let error = errorMessage {
+                    Text(error)
+                        .foregroundColor(.red)
+                        .padding()
                 } else {
-                    ForEach(menus, id: \.id) { menu in
-                        RestaurantCard(menu: menu)
+                    ForEach(restaurants) { restaurant in
+                        RestaurantCard(restaurant: restaurant)
                             .padding(.horizontal)
                     }
                 }
@@ -88,7 +113,13 @@ struct HomeView: View {
     private var navigationBarBackground: some View {
         Rectangle()
             .fill(.white.opacity(0.95))
-            .frame(height: UIApplication.shared.windows.first?.safeAreaInsets.top ?? 0 + 44)
+            .frame(height: {
+                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                   let window = windowScene.windows.first {
+                    return window.safeAreaInsets.top + 44
+                }
+                return 44
+            }())
             .ignoresSafeArea()
             .allowsHitTesting(false)
     }

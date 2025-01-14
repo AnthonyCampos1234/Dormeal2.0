@@ -64,13 +64,13 @@ struct CheckoutView: View {
                                     .font(.system(size: 18, weight: .semibold))
                                     .padding(.horizontal)
                                 
-                                ForEach(items, id: \.id) { item in
+                                ForEach(items) { item in
                                     HStack(spacing: 12) {
                                         VStack(alignment: .leading, spacing: 4) {
-                                            Text(item.name)
+                                            Text(item.menuItem.name)
                                                 .font(.system(size: 16, weight: .semibold))
                                                 .foregroundColor(.white)
-                                            Text("$\(item.basePrice, specifier: "%.2f")")
+                                            Text("$\(item.itemTotal, specifier: "%.2f")")
                                                 .font(.system(size: 14))
                                                 .foregroundColor(.gray)
                                         }
@@ -310,28 +310,29 @@ extension Color {
         name: "John Doe",
         phoneNumber: "+1234567890"
     )
+    
+    let restaurant = Restaurant(
+        id: "r1",
+        name: "Sample Restaurant",
+        address: "123 Main St",
+        website: "example.com",
+        imageUrl: "https://example.com/image.jpg",
+        operatingHours: OperatingHours(
+            monday: Hours(open: "09:00:00", close: "22:00:00"),
+            tuesday: Hours(open: "09:00:00", close: "22:00:00"),
+            wednesday: Hours(open: "09:00:00", close: "22:00:00"),
+            thursday: Hours(open: "09:00:00", close: "22:00:00"),
+            friday: Hours(open: "09:00:00", close: "22:00:00"),
+            saturday: Hours(open: "10:00:00", close: "23:00:00"),
+            sunday: Hours(open: "10:00:00", close: "21:00:00")
+        )
+    )
+    
     mockAppState.cart = Cart(
         id: "c1",
-        menu: RestaurantMenu(
-            id: "r1",
-            restaurantName: "Panda Express",
-            logo: "https://example.com/logo.png",
-            location: "Price Center",
-            categories: ["Chinese", "Asian"],
-            menu: []
-        ),
-        items: [
-            Item(
-                id: "i1",
-                name: "Orange Chicken",
-                basePrice: 12.99,
-                addonsSections: [],
-                additionalsSections: [],
-                choicesSections: [],
-                icon: "orange-chicken-icon"
-            )
-        ],
-        totalPrice: 12.99
+        restaurant: restaurant,
+        items: [],
+        totalPrice: 0
     )
     
     return NavigationStack {

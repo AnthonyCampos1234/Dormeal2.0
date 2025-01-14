@@ -7,11 +7,15 @@ enum DeliveryState {
 }
 
 struct ActiveOrderSheet: View {
+    @EnvironmentObject private var appState: AppState
     let order: Order
     @Environment(\.dismiss) private var dismiss
     @State private var isCompletingOrder = false
     @State private var showingConfirmation = false
     @State private var deliveryState: DeliveryState = .pickingUp
+    @State private var showingPickupConfirmation = false
+    @State private var showingNearbyConfirmation = false
+    @State private var showingExchangePointConfirmation = false
     
     var body: some View {
         NavigationView {
@@ -52,6 +56,38 @@ struct ActiveOrderSheet: View {
                         
                         // Delivery Location
                         deliverySection
+                        
+                        if order.deliveryMethod == .meetAtDoor {
+                            VStack {
+                                if let timer = appState.exchangePointTimer {
+                                    Text("Waiting for customer: \(timeString(from: appState.exchangePointTimeRemaining))")
+                                        .font(.headline)
+                                        .foregroundColor(.yellow)
+                                } else {
+                                    Button(action: {
+                                        showingExchangePointConfirmation = true
+                                    }) {
+                                        Text("At Customer's Door")
+                                            .frame(maxWidth: .infinity)
+                                            .padding()
+                                            .background(Color.blue)
+                                            .foregroundColor(.white)
+                                            .cornerRadius(8)
+                                    }
+                                    .disabled(appState.isLoading)
+                                }
+                            }
+                            .alert("Confirm Arrival", isPresented: $showingExchangePointConfirmation) {
+                                Button("Cancel", role: .cancel) { }
+                                Button("Confirm", role: .destructive) {
+                                    Task {
+                                        await appState.markOrderAtExchangePoint(orderId: order.id)
+                                    }
+                                }
+                            } message: {
+                                Text("Please confirm you're at the customer's door")
+                            }
+                        }
                     }
                     .padding()
                 }
@@ -89,6 +125,32 @@ struct ActiveOrderSheet: View {
             }
         } message: {
             Text(alertMessage)
+        }
+        .alert("Confirm Pickup", isPresented: $showingPickupConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Confirm", role: .destructive) {
+                Task {
+                    await appState.markOrderAsPickedUp(orderId: order.id)
+                }
+            }
+        } message: {
+            Text("Please confirm you have picked up the order from \(order.cart.restaurant.name)")
+        }
+        .alert("Confirm Arrival", isPresented: $showingNearbyConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Confirm", role: .destructive) {
+                Task {
+                    await appState.markOrderAsNearby(orderId: order.id)
+                }
+            }
+        } message: {
+            Text("Please confirm you're almost at \(order.building.name)")
+        }
+        .overlay {
+            if appState.isLoading {
+                ProgressView()
+                    .background(Color.black.opacity(0.5))
+            }
         }
     }
     
@@ -189,20 +251,18 @@ struct ActiveOrderSheet: View {
     
     private var directionsButton: some View {
         Button(action: {
-            // Google Maps integration would go here
             let destination = deliveryState == .pickingUp 
-                ? order.cart.menu.location  // Restaurant location when picking up
-                : order.location           // Delivery location after pickup
-            // TODO: Open Google Maps with 'destination'
+                ? order.cart.restaurant.address
+                : order.location
+            // TODO: Open maps with destination
         }) {
             HStack {
-                Image(systemName: "map.fill")
-                Text(deliveryState == .pickingUp ? "Directions to Restaurant" : "Directions to Delivery")
-                    .fontWeight(.semibold)
+                Image(systemName: "map")
+                Text("Open in Maps")
             }
             .frame(maxWidth: .infinity)
             .padding()
-            .background(Color.white.opacity(0.2))
+            .background(Color.blue)
             .foregroundColor(.white)
             .cornerRadius(12)
         }
@@ -217,7 +277,7 @@ struct ActiveOrderSheet: View {
             
             HStack(spacing: 12) {
                 if deliveryState == .pickingUp {
-                    AsyncImage(url: URL(string: order.cart.menu.logo)) { image in
+                    AsyncImage(url: URL(string: order.cart.restaurant.imageUrl)) { image in
                         image.resizable()
                     } placeholder: {
                         Color.gray.opacity(0.3)
@@ -226,11 +286,11 @@ struct ActiveOrderSheet: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                     
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(order.cart.menu.restaurantName)
+                        Text(order.cart.restaurant.name)
                             .font(.title3)
                             .fontWeight(.semibold)
                             .foregroundColor(.white)
-                        Text(order.cart.menu.location)
+                        Text(order.cart.restaurant.address)
                             .font(.subheadline)
                             .foregroundColor(.gray)
                     }
@@ -286,14 +346,17 @@ struct ActiveOrderSheet: View {
                 .foregroundColor(.gray)
             
             ForEach(order.cart.items, id: \.id) { item in
-                HStack {
-                    Text("1x")
-                        .foregroundColor(.gray)
-                    Text(item.name)
-                        .foregroundColor(.white)
+                HStack(spacing: 12) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(item.menuItem.name)
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.white)
+                        Text("1x")
+                            .foregroundColor(.gray)
+                        Text("$\(item.itemTotal, specifier: "%.2f")")
+                            .foregroundColor(.gray)
+                    }
                     Spacer()
-                    Text("$\(item.basePrice, specifier: "%.2f")")
-                        .foregroundColor(.gray)
                 }
                 .font(.system(.body, design: .rounded))
             }
@@ -380,12 +443,18 @@ struct ActiveOrderSheet: View {
     private var alertMessage: String {
         switch deliveryState {
         case .pickingUp:
-            return "Please confirm you have picked up the order from \(order.cart.menu.restaurantName)"
+            return "Please confirm you have picked up the order from \(order.cart.restaurant.name)"
         case .delivering:
             return "Please confirm you're almost at \(order.building.name)"
         case .arrived:
             return "Please confirm you've arrived at the delivery location"
         }
+    }
+    
+    private func timeString(from seconds: Int) -> String {
+        let minutes = seconds / 60
+        let remainingSeconds = seconds % 60
+        return String(format: "%d:%02d", minutes, remainingSeconds)
     }
 }
 

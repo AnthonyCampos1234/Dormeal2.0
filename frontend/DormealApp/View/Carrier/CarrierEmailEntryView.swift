@@ -60,6 +60,7 @@ struct CarrierEmailEntryView: View {
         }
         .navigationDestination(isPresented: $navigateToCode) {
             CarrierCodeEntryView(
+                email: email,
                 showCarrierOnboarding: $showCarrierOnboarding,
                 hideTabBar: $hideTabBar,
                 onBecomeCarrier: onBecomeCarrier

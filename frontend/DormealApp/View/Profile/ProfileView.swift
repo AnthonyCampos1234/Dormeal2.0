@@ -137,8 +137,12 @@ struct ProfileView: View {
         .background(Color.white.ignoresSafeArea())
         .onAppear {
             Task {
-                await appState.loadUserProfile()
+                await refreshProfile()
             }
         }
+    }
+    
+    private func refreshProfile() async {
+        await appState.loadUserProfile()
     }
 }

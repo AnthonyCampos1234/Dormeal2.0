@@ -2,55 +2,54 @@ import SwiftUI
 
 struct MenuItemView: View {
     let item: MenuItem
-    var onAddPress: () -> Void
     @State private var showingDetail = false
+    @EnvironmentObject private var appState: AppState
     
     var body: some View {
-        ZStack(alignment: .bottomTrailing) {
-            Button(action: { showingDetail = true }) {
-                HStack(spacing: 12) {
-                    AsyncImage(url: URL(string: item.imageUrl)) { image in
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 80, height: 80)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                    } placeholder: {
-                        Rectangle()
-                            .fill(Color.gray.opacity(0.2))
-                            .frame(width: 80, height: 80)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                    }
+        Button(action: { showingDetail = true }) {
+            HStack(spacing: 12) {
+                AsyncImage(url: URL(string: item.imageUrl)) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 80, height: 80)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                } placeholder: {
+                    Rectangle()
+                        .fill(Color.gray.opacity(0.2))
+                        .frame(width: 80, height: 80)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(item.name)
+                        .font(.headline)
                     
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(item.name)
-                            .font(.headline)
-                        Text(item.description)
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                        Text("$\(String(format: "%.2f", item.price))")
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
+                    Text("$\(item.price, specifier: "%.2f")")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    
+                    if !item.optionsSections.isEmpty {
+                        Text("Customizable")
+                            .font(.caption)
+                            .foregroundColor(.blue)
                     }
                 }
-                .padding()
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(12)
-            }
-            .buttonStyle(PlainButtonStyle())
-            
-            Button(action: { showingDetail = true }) {
+                
+                Spacer()
+                
                 Image(systemName: "plus.circle.fill")
-                    .font(.system(size: 24))
-                    .foregroundColor(.black)
-                    .padding(16)
+                    .font(.title2)
+                    .foregroundColor(.blue)
             }
+            .padding()
+            .background(Color.gray.opacity(0.1))
+            .cornerRadius(12)
         }
+        .buttonStyle(PlainButtonStyle())
         .sheet(isPresented: $showingDetail) {
-            MenuItemDetailView(item: item, onAddPress: onAddPress)
+            MenuItemDetailView(item: item)
         }
-        .padding(.horizontal)
     }
 }
 
@@ -59,12 +58,10 @@ struct MenuItemView: View {
         item: MenuItem(
             id: "1",
             name: "Classic Burger",
-            price: 12.99,
-            description: "Juicy beef patty with lettuce, tomato, and cheese",
-            category: "Burgers",
+            price: 9.99,
             imageUrl: "https://example.com/burger.jpg",
-            optionGroups: []
-        ),
-        onAddPress: {}
+            optionsSections: [],
+            addOnsSections: []
+        )
     )
 } 

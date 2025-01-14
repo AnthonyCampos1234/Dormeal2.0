@@ -1,128 +1,88 @@
 import SwiftUI
+import PhotosUI
 
 struct DropoffPhotoView: View {
-    let order: Order
+    @EnvironmentObject private var appState: AppState
     @Environment(\.dismiss) private var dismiss
-    @State private var image: UIImage?
-    @State private var showingImagePicker = false
-    @State private var isUploading = false
+    let orderId: String
+    
+    @State private var selectedItem: PhotosPickerItem?
+    @State private var photoUrl: String?
+    @State private var showingConfirmation = false
     
     var body: some View {
-        ZStack {
-            Color.black.ignoresSafeArea()
-            
-            VStack(spacing: 24) {
-                Text("Take Delivery Photo")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .foregroundColor(.white)
-                
-                Text("Please take a clear photo of where you left the order")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
+        NavigationStack {
+            VStack(spacing: 20) {
+                Text("Take a photo of where you left the order")
+                    .font(.headline)
                     .multilineTextAlignment(.center)
                 
-                if let image = image {
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 300)
-                        .cornerRadius(12)
-                } else {
-                    Button(action: {
-                        showingImagePicker = true
-                    }) {
-                        VStack {
-                            Image(systemName: "camera.fill")
-                                .font(.largeTitle)
-                            Text("Take Photo")
-                                .font(.headline)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 300)
-                        .background(Color.white.opacity(0.1))
-                        .foregroundColor(.white)
-                        .cornerRadius(12)
+                if let photoUrl = photoUrl {
+                    AsyncImage(url: URL(string: photoUrl)) { image in
+                        image
+                            .resizable()
+                            .scaledToFit()
+                            .frame(maxHeight: 300)
+                    } placeholder: {
+                        ProgressView()
                     }
                 }
                 
-                if image != nil {
-                    Button(action: {
-                        uploadPhoto()
-                    }) {
-                        HStack {
-                            Text("Complete Delivery")
-                                .fontWeight(.semibold)
-                            if isUploading {
-                                ProgressView()
-                                    .tint(.black)
-                            }
-                        }
+                PhotosPicker(selection: $selectedItem,
+                           matching: .images,
+                           photoLibrary: .shared()) {
+                    Label("Take Photo", systemImage: "camera")
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.white)
-                        .foregroundColor(.black)
-                        .cornerRadius(12)
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+                }
+                
+                if photoUrl != nil {
+                    Button(action: {
+                        showingConfirmation = true
+                    }) {
+                        Text("Confirm Dropoff")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.green)
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
                     }
-                    .disabled(isUploading)
                 }
             }
             .padding()
-        }
-        .navigationBarBackButtonHidden(true)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button("Back") {
-                    dismiss()
+            .navigationTitle("Dropoff Photo")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
                 }
-                .foregroundColor(.white)
             }
-        }
-        .sheet(isPresented: $showingImagePicker) {
-            ImagePicker(image: $image)
-        }
-    }
-    
-    private func uploadPhoto() {
-        isUploading = true
-        // Simulate upload
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            isUploading = false
-            dismiss()
-        }
-    }
-}
-
-// Add this struct for camera access
-struct ImagePicker: UIViewControllerRepresentable {
-    @Binding var image: UIImage?
-    @Environment(\.presentationMode) private var presentationMode
-    
-    func makeUIViewController(context: Context) -> UIImagePickerController {
-        let picker = UIImagePickerController()
-        picker.delegate = context.coordinator
-        picker.sourceType = .camera
-        return picker
-    }
-    
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-    
-    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-        let parent: ImagePicker
-        
-        init(_ parent: ImagePicker) {
-            self.parent = parent
-        }
-        
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-            if let image = info[.originalImage] as? UIImage {
-                parent.image = image
+            .alert("Confirm Dropoff", isPresented: $showingConfirmation) {
+                Button("Cancel", role: .cancel) { }
+                Button("Confirm", role: .destructive) {
+                    if let photoUrl = photoUrl {
+                        Task {
+                            await appState.markOrderAsDroppedOff(orderId: orderId, photoUrl: photoUrl)
+                            dismiss()
+                        }
+                    }
+                }
+            } message: {
+                Text("Please confirm you've dropped off the order and taken a photo of the dropoff location")
             }
-            parent.presentationMode.wrappedValue.dismiss()
+            .onChange(of: selectedItem) { _ in
+                Task {
+                    // Here you would normally upload the photo and get back a URL
+                    // For now, we'll simulate it
+                    try? await Task.sleep(nanoseconds: 1_000_000_000)
+                    photoUrl = "https://example.com/mock-photo.jpg"
+                }
+            }
         }
     }
 } 

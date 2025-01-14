@@ -12,7 +12,7 @@ struct CartView: View {
         isSubmitting = true
         do {
             guard let user = appState.user else { return }
-            let order = try await APIService.shared.submitOrder(
+            _ = try await APIService.shared.submitOrder(
                 cart: cart,
                 building: user.homeBuilding,
                 location: "Room 123"
@@ -33,7 +33,7 @@ struct CartView: View {
                         VStack(spacing: 12) {
                             ForEach(cart.items, id: \.id) { item in
                                 CartItemRow(item: item) {
-                                    appState.removeFromCart(item: item)
+                                    appState.removeFromCart(itemId: item.id)
                                 }
                             }
                         }
@@ -100,28 +100,33 @@ struct EmptyCartView: View {
 }
 
 struct CartItemRow: View {
-    let item: Item
+    let item: CartItem
     let onDelete: () -> Void
     @EnvironmentObject private var appState: AppState
-    @State private var quantity: Int = 1
+    @State private var quantity: Int
+    
+    init(item: CartItem, onDelete: @escaping () -> Void) {
+        self.item = item
+        self.onDelete = onDelete
+        _quantity = State(initialValue: item.quantity)
+    }
     
     var body: some View {
         HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 4) {
-                Text(item.name)
+                Text(item.menuItem.name)
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(.white)
                 
-                // Display selected options
                 if !item.selectedOptions.isEmpty {
-                    ForEach(item.selectedOptions, id: \.self) { option in
+                    ForEach(Array(item.selectedOptions.values), id: \.self) { option in
                         Text("• \(option)")
                             .font(.system(size: 12))
                             .foregroundColor(.gray)
                     }
                 }
                 
-                Text("$\(item.basePrice, specifier: "%.2f")")
+                Text("$\(item.itemTotal, specifier: "%.2f")")
                     .font(.system(size: 14))
                     .foregroundColor(.gray)
             }
@@ -131,6 +136,7 @@ struct CartItemRow: View {
             // Quantity controls
             HStack(spacing: 12) {
                 Button(action: {
+                    appState.updateItemQuantity(itemId: item.id, quantity: quantity - 1)
                     quantity -= 1
                 }) {
                     Image(systemName: "trash")
@@ -146,8 +152,8 @@ struct CartItemRow: View {
                     .frame(minWidth: 24)
                 
                 Button(action: {
+                    appState.updateItemQuantity(itemId: item.id, quantity: quantity + 1)
                     quantity += 1
-                    // TODO: Update cart quantity
                 }) {
                     Image(systemName: "plus")
                         .foregroundColor(.black)
@@ -166,17 +172,25 @@ struct CartItemRow: View {
 struct CartItemRow_Previews: PreviewProvider {
     static var previews: some View {
         let mockAppState = AppState()
-        let mockItem = Item(
+        let mockMenuItem = MenuItem(
             id: "i1",
             name: "Test Item",
-            basePrice: 9.99,
-            addonsSections: [],
-            additionalsSections: [],
-            choicesSections: [],
-            icon: "test-icon"
+            price: 9.99,
+            imageUrl: "https://example.com/image.jpg",
+            optionsSections: [],
+            addOnsSections: []
         )
         
-        CartItemRow(item: mockItem, onDelete: {})
+        let mockCartItem = CartItem(
+            id: "ci1",
+            menuItem: mockMenuItem,
+            quantity: 1,
+            selectedOptions: [:],
+            selectedAddOns: Set(),
+            itemTotal: 9.99
+        )
+        
+        CartItemRow(item: mockCartItem, onDelete: {})
             .environmentObject(mockAppState)
             .padding()
     }
@@ -194,37 +208,29 @@ struct CartItemRow_Previews: PreviewProvider {
         name: "John Doe",
         phoneNumber: "+1234567890"
     )
+    
+    let restaurant = Restaurant(
+        id: "r1",
+        name: "Sample Restaurant",
+        address: "123 Main St",
+        website: "example.com",
+        imageUrl: "https://example.com/image.jpg",
+        operatingHours: OperatingHours(
+            monday: Hours(open: "09:00:00", close: "22:00:00"),
+            tuesday: Hours(open: "09:00:00", close: "22:00:00"),
+            wednesday: Hours(open: "09:00:00", close: "22:00:00"),
+            thursday: Hours(open: "09:00:00", close: "22:00:00"),
+            friday: Hours(open: "09:00:00", close: "22:00:00"),
+            saturday: Hours(open: "10:00:00", close: "23:00:00"),
+            sunday: Hours(open: "10:00:00", close: "21:00:00")
+        )
+    )
+    
     appState.cart = Cart(
         id: "c1",
-        menu: RestaurantMenu(
-            id: "r1",
-            restaurantName: "Panda Express",
-            logo: "https://example.com/logo.png",
-            location: "Price Center",
-            categories: ["Chinese", "Asian"],
-            menu: []
-        ),
-        items: [
-            Item(
-                id: "i1",
-                name: "Orange Chicken",
-                basePrice: 12.99,
-                addonsSections: [],
-                additionalsSections: [],
-                choicesSections: [],
-                icon: "orange-chicken-icon"
-            ),
-            Item(
-                id: "i2",
-                name: "Beijing Beef",
-                basePrice: 13.99,
-                addonsSections: [],
-                additionalsSections: [],
-                choicesSections: [],
-                icon: "beijing-beef-icon"
-            )
-        ],
-        totalPrice: 26.98
+        restaurant: restaurant,
+        items: [],
+        totalPrice: 0
     )
     
     return CartView()
