@@ -2,38 +2,119 @@ import Foundation
 
 class APIService {
     static let shared = APIService()
-    private let baseURL = "YOUR_FLASK_API_URL" // Replace with your actual base URL
+    private let baseURL = "https://api.example.com"  // Replace with your actual base URL
     
     struct APIErrorResponse: Codable {
         let error: String
     }
     
+    #if DEBUG
+    var mockRestaurants: [Restaurant] = [
+        Restaurant(
+            id: "r1",
+            name: "Burger Palace",
+            address: "123 Campus Drive",
+            website: "www.burgerpalace.com",
+            imageUrl: "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=500",
+            operatingHours: OperatingHours(
+                monday: Hours(open: "10:00:00", close: "22:00:00"),
+                tuesday: Hours(open: "10:00:00", close: "22:00:00"),
+                wednesday: Hours(open: "10:00:00", close: "22:00:00"),
+                thursday: Hours(open: "10:00:00", close: "22:00:00"),
+                friday: Hours(open: "10:00:00", close: "23:00:00"),
+                saturday: Hours(open: "11:00:00", close: "23:00:00"),
+                sunday: Hours(open: "11:00:00", close: "21:00:00")
+            )
+        ),
+        Restaurant(
+            id: "r2",
+            name: "Pizza Express",
+            address: "456 University Ave",
+            website: "www.pizzaexpress.com",
+            imageUrl: "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=500",
+            operatingHours: OperatingHours(
+                monday: Hours(open: "11:00:00", close: "23:00:00"),
+                tuesday: Hours(open: "11:00:00", close: "23:00:00"),
+                wednesday: Hours(open: "11:00:00", close: "23:00:00"),
+                thursday: Hours(open: "11:00:00", close: "23:00:00"),
+                friday: Hours(open: "11:00:00", close: "00:00:00"),
+                saturday: Hours(open: "12:00:00", close: "00:00:00"),
+                sunday: Hours(open: "12:00:00", close: "22:00:00")
+            )
+        ),
+        Restaurant(
+            id: "r3",
+            name: "Sushi Zone",
+            address: "789 College Blvd",
+            website: "www.sushizone.com",
+            imageUrl: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=500",
+            operatingHours: OperatingHours(
+                monday: Hours(open: "11:30:00", close: "21:30:00"),
+                tuesday: Hours(open: "11:30:00", close: "21:30:00"),
+                wednesday: Hours(open: "11:30:00", close: "21:30:00"),
+                thursday: Hours(open: "11:30:00", close: "21:30:00"),
+                friday: Hours(open: "11:30:00", close: "22:30:00"),
+                saturday: Hours(open: "12:00:00", close: "22:30:00"),
+                sunday: Hours(open: "12:00:00", close: "21:00:00")
+            )
+        )
+    ]
+    #endif
+    
     // Fetch restaurants for a user
     func fetchRestaurants(userId: String) async throws -> [Restaurant] {
-        guard let url = URL(string: "\(baseURL)/get-restaurants/\(userId)") else {
-            throw APIError.invalidURL
-        }
+        #if DEBUG
+        return mockRestaurants
+        #else
+        // guard let url = URL(string: "\(baseURL)/get-restaurants/\(userId)") else {
+        //     throw APIError.invalidURL
+        // }
         
-        let (data, response) = try await URLSession.shared.data(from: url)
+        // let (data, response) = try await URLSession.shared.data(from: url)
         
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw APIError.invalidResponse
-        }
+        // guard let httpResponse = response as? HTTPURLResponse else {
+        //     throw APIError.invalidResponse
+        // }
         
-        switch httpResponse.statusCode {
-        case 200:
-            return try JSONDecoder().decode([Restaurant].self, from: data)
-        case 404:
-            throw APIError.notFound
-        case 500:
-            throw APIError.serverError
-        default:
-            throw APIError.unexpectedStatusCode(httpResponse.statusCode)
-        }
+        // switch httpResponse.statusCode {
+        // case 200:
+        //     return try JSONDecoder().decode([Restaurant].self, from: data)
+        // case 404:
+        //     throw APIError.notFound
+        // case 500:
+        //     throw APIError.serverError
+        // default:
+        //     throw APIError.unexpectedStatusCode(httpResponse.statusCode)
+        // }
+        #endif
     }
     
     // Fetch menu for a restaurant
     func fetchRestaurantMenu(restaurantId: String) async throws -> [MenuSection] {
+        #if DEBUG
+        // Return mock menu sections based on restaurant ID
+        return [
+            MenuSection(
+                id: "burgers",
+                name: "Burgers",
+                imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500",
+                items: ["burger1", "burger2", "burger3"]
+            ),
+            MenuSection(
+                id: "sides",
+                name: "Sides",
+                imageUrl: "https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?w=500",
+                items: ["fries1", "rings1"]
+            ),
+            MenuSection(
+                id: "drinks",
+                name: "Drinks",
+                imageUrl: "https://images.unsplash.com/photo-1437418747212-8d9709afab22?w=500",
+                items: ["drink1", "drink2"]
+            )
+        ]
+        #else
+        // Your actual API implementation
         guard let url = URL(string: "\(baseURL)/restaurant-menu/\(restaurantId)") else {
             throw APIError.invalidURL
         }
@@ -54,10 +135,130 @@ class APIService {
         default:
             throw APIError.unexpectedStatusCode(httpResponse.statusCode)
         }
+        #endif
     }
     
     // Fetch a specific menu item
     func fetchMenuItem(itemId: String) async throws -> MenuItem {
+        #if DEBUG
+        // Return mock menu items based on item ID
+        let mockItems: [String: MenuItem] = [
+            "burger1": MenuItem(
+                id: "burger1",
+                name: "Classic Cheeseburger",
+                price: 8.99,
+                imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500",
+                optionsSections: [
+                    OptionsSection(
+                        id: "patty",
+                        name: "Patty Temperature",
+                        mandatory: true,
+                        options: [
+                            Option(id: "medium", name: "Medium", price: 0),
+                            Option(id: "well", name: "Well Done", price: 0)
+                        ]
+                    )
+                ],
+                addOnsSections: [
+                    AddOnsSection(
+                        id: "toppings",
+                        name: "Extra Toppings",
+                        maxAddOns: 3,
+                        addOns: [
+                            AddOn(id: "bacon", name: "Bacon", price: 1.50),
+                            AddOn(id: "avocado", name: "Avocado", price: 1.00)
+                        ]
+                    )
+                ]
+            ),
+            "burger2": MenuItem(
+                id: "burger2",
+                name: "Bacon Deluxe",
+                price: 10.99,
+                imageUrl: "https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=500",
+                optionsSections: [],
+                addOnsSections: []
+            ),
+            "burger3": MenuItem(
+                id: "burger3",
+                name: "Veggie Burger",
+                price: 9.99,
+                imageUrl: "https://images.unsplash.com/photo-1520072959219-c595dc870360?w=500",
+                optionsSections: [],
+                addOnsSections: []
+            ),
+            "fries1": MenuItem(
+                id: "fries1",
+                name: "French Fries",
+                price: 3.99,
+                imageUrl: "https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?w=500",
+                optionsSections: [
+                    OptionsSection(
+                        id: "size",
+                        name: "Size",
+                        mandatory: true,
+                        options: [
+                            Option(id: "regular", name: "Regular", price: 0),
+                            Option(id: "large", name: "Large", price: 1.50)
+                        ]
+                    )
+                ],
+                addOnsSections: []
+            ),
+            "rings1": MenuItem(
+                id: "rings1",
+                name: "Onion Rings",
+                price: 4.99,
+                imageUrl: "https://images.unsplash.com/photo-1639024471283-03518883512d?w=500",
+                optionsSections: [],
+                addOnsSections: []
+            ),
+            "drink1": MenuItem(
+                id: "drink1",
+                name: "Soft Drink",
+                price: 2.49,
+                imageUrl: "https://images.unsplash.com/photo-1437418747212-8d9709afab22?w=500",
+                optionsSections: [
+                    OptionsSection(
+                        id: "size",
+                        name: "Size",
+                        mandatory: true,
+                        options: [
+                            Option(id: "small", name: "Small", price: 0),
+                            Option(id: "medium", name: "Medium", price: 0.50),
+                            Option(id: "large", name: "Large", price: 1.00)
+                        ]
+                    )
+                ],
+                addOnsSections: []
+            ),
+            "drink2": MenuItem(
+                id: "drink2",
+                name: "Milkshake",
+                price: 4.99,
+                imageUrl: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=500",
+                optionsSections: [
+                    OptionsSection(
+                        id: "flavor",
+                        name: "Flavor",
+                        mandatory: true,
+                        options: [
+                            Option(id: "chocolate", name: "Chocolate", price: 0),
+                            Option(id: "vanilla", name: "Vanilla", price: 0),
+                            Option(id: "strawberry", name: "Strawberry", price: 0)
+                        ]
+                    )
+                ],
+                addOnsSections: []
+            )
+        ]
+        
+        if let item = mockItems[itemId] {
+            return item
+        }
+        throw APIError.notFound
+        #else
+        // Your actual API implementation
         guard let url = URL(string: "\(baseURL)/menu-items/\(itemId)") else {
             throw APIError.invalidURL
         }
@@ -78,6 +279,7 @@ class APIService {
         default:
             throw APIError.unexpectedStatusCode(httpResponse.statusCode)
         }
+        #endif
     }
     
     // Submit an order

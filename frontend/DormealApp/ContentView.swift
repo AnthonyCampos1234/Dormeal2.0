@@ -17,19 +17,16 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             if showOnboarding {
-                // Onboarding flow
                 NavigationStack {
                     PhoneNumberEnterView(showOnboarding: $showOnboarding)
                 }
                 .opacity(isLoading ? 0 : 1)
             } else {
-                // Main app content
                 MainTabView(selectedTab: $selectedTab)
                     .environmentObject(appState)
                     .opacity(isLoading ? 0 : 1)
             }
             
-            // Loading screen
             if isLoading {
                 SplashScreenView()
                     .transition(.opacity)
@@ -37,7 +34,6 @@ struct ContentView: View {
             }
         }
         .onAppear {
-            // Ensure keyboard is dismissed during loading
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), 
                                          to: nil, 
                                          from: nil, 
@@ -48,6 +44,11 @@ struct ContentView: View {
                     isLoading = false
                 }
             }
+            
+            #if DEBUG
+            // Add mock item to cart for demo
+            appState.addMockItemToCart()
+            #endif
         }
     }
 }
@@ -150,7 +151,17 @@ struct TabButton: View {
     let action: () -> Void
     
     var body: some View {
-        Button(action: action) {
+        Button(action: {
+            let generator = UIImpactFeedbackGenerator(style: .light)
+            generator.prepare()
+            
+            do {
+                generator.impactOccurred(intensity: 0.7)
+                action()
+            } catch {
+                action()
+            }
+        }) {
             Image(isSelected ? "\(imageName)_filled" : "\(imageName)_outline")
                 .scaleEffect(isSelected ? 1.0 : 0.9)
                 .animation(.spring(response: 0.3, dampingFraction: 0.5).repeatCount(1, autoreverses: true), value: isSelected)

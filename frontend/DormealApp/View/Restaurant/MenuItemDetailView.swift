@@ -121,19 +121,10 @@ struct MenuItemDetailView: View {
                 }
             }
             .safeAreaInset(edge: .bottom) {
-                Button(action: {
+                PrimaryButton(title: "Add to Cart • $\(String(format: "%.2f", totalPrice))") {
                     // Add to cart logic here
                     dismiss()
-                }) {
-                    Text("Add to Cart • $\(totalPrice, specifier: "%.2f")")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .cornerRadius(12)
                 }
-                .padding()
             }
         }
     }
@@ -157,7 +148,7 @@ struct OptionRow: View {
                 }
             }
         }
-        .foregroundColor(isSelected ? .blue : .primary)
+        .foregroundColor(isSelected ? .black : .primary)
     }
 }
 
@@ -179,7 +170,7 @@ struct AddOnRow: View {
                 }
             }
         }
-        .foregroundColor(isSelected ? .blue : .primary)
+        .foregroundColor(isSelected ? .black : .primary)
     }
 }
 

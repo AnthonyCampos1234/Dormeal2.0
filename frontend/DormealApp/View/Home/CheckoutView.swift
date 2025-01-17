@@ -5,7 +5,8 @@ struct CheckoutView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var isSubmitting = false
     @State private var errorMessage: String?
-    @State private var selectedPaymentMethod = "Apple Pay" // Default payment method
+    @State private var showingConfirmation = false
+    @State private var selectedPaymentMethod = "Apple Pay" 
     let paymentMethods = ["Apple Pay", "Credit Card", "Debit Card"]
     
     private var subtotal: Double {
@@ -24,32 +25,12 @@ struct CheckoutView: View {
         subtotal + deliveryFee + serviceFee
     }
     
-    private func submitOrder() async {
-        guard let cart = appState.cart else { return }
-        guard let user = appState.user else { return }
-        
+    private func submitOrder() {
         isSubmitting = true
-        do {
-            let order = try await APIService.shared.submitOrder(
-                cart: cart,
-                building: user.homeBuilding,
-                location: user.homeBuilding.name
-            )
-            appState.cart = nil
-            // Create the confirmation view with the environment object
-            let orderConfirmationView = OrderConfirmationView(orderNumber: order.id)
-                .environmentObject(appState)
-            
-            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-               let window = windowScene.windows.first,
-               let rootViewController = window.rootViewController {
-                let hostingController = UIHostingController(rootView: orderConfirmationView)
-                rootViewController.present(hostingController, animated: true)
-            }
-        } catch {
-            errorMessage = "Failed to submit order: \(error.localizedDescription)"
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            isSubmitting = false
+            showingConfirmation = true
         }
-        isSubmitting = false
     }
     
     var body: some View {
@@ -57,7 +38,6 @@ struct CheckoutView: View {
             VStack(spacing: 0) {
                 ScrollView {
                     VStack(spacing: 20) {
-                        // Order Items Section
                         if let items = appState.cart?.items {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Your Order")
@@ -83,7 +63,6 @@ struct CheckoutView: View {
                             }
                         }
                         
-                        // Delivery Details Section
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Delivery Details")
                                 .font(.system(size: 18, weight: .semibold))
@@ -107,7 +86,6 @@ struct CheckoutView: View {
                             }
                         }
                         
-                        // Payment Details Section
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Payment Details")
                                 .font(.system(size: 18, weight: .semibold))
@@ -150,7 +128,6 @@ struct CheckoutView: View {
                             )
                         }
                         
-                        // Savings Comparison Section
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Save Big with Dormeal")
                                 .font(.system(size: 18, weight: .semibold))
@@ -188,7 +165,6 @@ struct CheckoutView: View {
                             .cornerRadius(8)
                         }
                         
-                        // Order Summary Section
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Order Summary")
                                 .font(.system(size: 18, weight: .semibold))
@@ -212,17 +188,15 @@ struct CheckoutView: View {
                     .padding()
                 }
                 
-                // Place Order Button
                 VStack {
                     PrimaryButton(
                         title: "Pay",
                         isLoading: isSubmitting
                     ) {
-                        Task {
-                            await submitOrder()
-                        }
+                        submitOrder()
                     }
                 }
+                .padding()
                 .background(Color.white)
                 .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: -4)
                 .disabled(isSubmitting)
@@ -237,6 +211,9 @@ struct CheckoutView: View {
                     }
                 }
             }
+        }
+        .fullScreenCover(isPresented: $showingConfirmation) {
+            OrderConfirmationView(orderNumber: "DM\(Int.random(in: 100000...999999))")
         }
         .alert("Error", isPresented: .constant(errorMessage != nil)) {
             Button("OK") { errorMessage = nil }

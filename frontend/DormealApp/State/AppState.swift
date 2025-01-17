@@ -114,6 +114,61 @@ class AppState: ObservableObject {
                     name: "John Doe",
                     phoneNumber: "+1234567890"
                 )
+                
+                // Add mock restaurants data
+                let mockRestaurants = [
+                    Restaurant(
+                        id: "r1",
+                        name: "Burger Palace",
+                        address: "123 Campus Drive",
+                        website: "www.burgerpalace.com",
+                        imageUrl: "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=500",
+                        operatingHours: OperatingHours(
+                            monday: Hours(open: "10:00:00", close: "22:00:00"),
+                            tuesday: Hours(open: "10:00:00", close: "22:00:00"),
+                            wednesday: Hours(open: "10:00:00", close: "22:00:00"),
+                            thursday: Hours(open: "10:00:00", close: "22:00:00"),
+                            friday: Hours(open: "10:00:00", close: "23:00:00"),
+                            saturday: Hours(open: "11:00:00", close: "23:00:00"),
+                            sunday: Hours(open: "11:00:00", close: "21:00:00")
+                        )
+                    ),
+                    Restaurant(
+                        id: "r2",
+                        name: "Pizza Express",
+                        address: "456 University Ave",
+                        website: "www.pizzaexpress.com",
+                        imageUrl: "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=500",
+                        operatingHours: OperatingHours(
+                            monday: Hours(open: "11:00:00", close: "23:00:00"),
+                            tuesday: Hours(open: "11:00:00", close: "23:00:00"),
+                            wednesday: Hours(open: "11:00:00", close: "23:00:00"),
+                            thursday: Hours(open: "11:00:00", close: "23:00:00"),
+                            friday: Hours(open: "11:00:00", close: "00:00:00"),
+                            saturday: Hours(open: "12:00:00", close: "00:00:00"),
+                            sunday: Hours(open: "12:00:00", close: "22:00:00")
+                        )
+                    ),
+                    Restaurant(
+                        id: "r3",
+                        name: "Sushi Zone",
+                        address: "789 College Blvd",
+                        website: "www.sushizone.com",
+                        imageUrl: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=500",
+                        operatingHours: OperatingHours(
+                            monday: Hours(open: "11:30:00", close: "21:30:00"),
+                            tuesday: Hours(open: "11:30:00", close: "21:30:00"),
+                            wednesday: Hours(open: "11:30:00", close: "21:30:00"),
+                            thursday: Hours(open: "11:30:00", close: "21:30:00"),
+                            friday: Hours(open: "11:30:00", close: "22:30:00"),
+                            saturday: Hours(open: "12:00:00", close: "22:30:00"),
+                            sunday: Hours(open: "12:00:00", close: "21:00:00")
+                        )
+                    )
+                ]
+                
+                // Update APIService to return mock data
+                APIService.shared.mockRestaurants = mockRestaurants
             }
             #else
             // Real API call
@@ -539,4 +594,60 @@ class AppState: ObservableObject {
         }
         isLoading = false
     }
+    
+    #if DEBUG
+    func addMockItemToCart() {
+        let mockRestaurant = APIService.shared.mockRestaurants[0] // Use the first mock restaurant
+        
+        if cart == nil {
+            cart = Cart(
+                id: "cart1",
+                restaurant: mockRestaurant,
+                items: [],
+                totalPrice: 0
+            )
+        }
+        
+        let mockMenuItem = MenuItem(
+            id: "burger1",
+            name: "Classic Cheeseburger",
+            price: 8.99,
+            imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500",
+            optionsSections: [
+                OptionsSection(
+                    id: "patty",
+                    name: "Patty Temperature",
+                    mandatory: true,
+                    options: [
+                        Option(id: "medium", name: "Medium", price: 0),
+                        Option(id: "well", name: "Well Done", price: 0)
+                    ]
+                )
+            ],
+            addOnsSections: [
+                AddOnsSection(
+                    id: "toppings",
+                    name: "Extra Toppings",
+                    maxAddOns: 3,
+                    addOns: [
+                        AddOn(id: "bacon", name: "Bacon", price: 1.50),
+                        AddOn(id: "avocado", name: "Avocado", price: 1.00)
+                    ]
+                )
+            ]
+        )
+        
+        let cartItem = CartItem(
+            id: UUID().uuidString,
+            menuItem: mockMenuItem,
+            quantity: 1,
+            selectedOptions: ["patty": "Medium"],
+            selectedAddOns: Set(["bacon"]),
+            itemTotal: mockMenuItem.price + 1.50 // Base price + bacon
+        )
+        
+        cart?.items.append(cartItem)
+        updateCartTotal()
+    }
+    #endif
 } 

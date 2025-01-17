@@ -57,6 +57,7 @@ struct CartView: View {
                             showingCheckout = true
                         }
                     }
+                    .padding(.bottom)
                     .background(Color(UIColor.systemBackground))
                 } else {
                     EmptyCartView()
@@ -71,6 +72,9 @@ struct CartView: View {
                             .foregroundColor(.primary)
                     }
                 }
+            }
+            .fullScreenCover(isPresented: $showingCheckout) {
+                CheckoutView()
             }
         }
         .alert("Error", isPresented: .constant(errorMessage != nil)) {

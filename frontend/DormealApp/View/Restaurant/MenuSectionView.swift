@@ -8,24 +8,10 @@ struct MenuSectionView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             // Section Header
-            HStack {
-                AsyncImage(url: URL(string: section.imageUrl)) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 40, height: 40)
-                        .clipShape(Circle())
-                } placeholder: {
-                    Circle()
-                        .fill(Color.gray.opacity(0.2))
-                        .frame(width: 40, height: 40)
-                }
-                
-                Text(section.name)
-                    .font(.title2)
-                    .fontWeight(.bold)
-            }
-            .padding(.horizontal)
+            Text(section.name)
+                .font(.title2)
+                .fontWeight(.bold)
+                .padding(.horizontal)
             
             // Items
             ForEach(section.items, id: \.self) { itemId in

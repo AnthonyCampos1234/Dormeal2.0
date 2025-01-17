@@ -16,13 +16,17 @@ struct HomeView: View {
         errorMessage = nil
         
         do {
+            #if DEBUG
+            // Use mock data in debug mode
+            restaurants = APIService.shared.mockRestaurants
+            #else
             guard let userId = appState.user?.id else {
                 errorMessage = "User not found"
                 isLoading = false
                 return
             }
-            
             restaurants = try await APIService.shared.fetchRestaurants(userId: userId)
+            #endif
         } catch APIError.notFound {
             errorMessage = "No restaurants found for your school"
         } catch APIError.serverError {
@@ -60,28 +64,42 @@ struct HomeView: View {
                 }
                 
                 ToolbarItem(placement: .topBarTrailing) {
-                    VStack(alignment: .center, spacing: 2) {
-                        Text("Order Status")
-                            .font(.caption)
-                            .foregroundColor(.gray)
-                        Image("orderstatusempty_icon")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(height: 20)
+                    HStack(spacing: 16) {
+                        // Cart Button
+                        Button(action: { showingCart = true }) {
+                            ZStack(alignment: .topTrailing) {
+                                Image(systemName: "cart")
+                                    .font(.system(size: 20))
+                                if let itemCount = appState.cart?.items.count, itemCount > 0 {
+                                    Text("\(itemCount)")
+                                        .font(.caption2)
+                                        .padding(4)
+                                        .background(Color.red)
+                                        .foregroundColor(.white)
+                                        .clipShape(Circle())
+                                        .offset(x: 10, y: -10)
+                                }
+                            }
+                        }
+                        
+                        // Order Status Button
+                        VStack(alignment: .center, spacing: 2) {
+                            Text("Order Status")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                            Image("orderstatusempty_icon")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(height: 20)
+                        }
                     }
                     .padding(.trailing, 8)
-                    .onTapGesture {
-                        // Add navigation to order status view here
-                    }
                 }
             }
             .toolbarBackground(.clear, for: .navigationBar)
             .overlay(navigationBarBackground, alignment: .top)
             .sheet(isPresented: $showingCart) {
                 CartView()
-                    .sheet(isPresented: $showingCheckout) {
-                        CheckoutView()
-                    }
             }
             .task {
                 await loadRestaurants()

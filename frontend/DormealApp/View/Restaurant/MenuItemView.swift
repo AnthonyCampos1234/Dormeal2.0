@@ -24,27 +24,27 @@ struct MenuItemView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(item.name)
                         .font(.headline)
+                        .foregroundColor(.black)
                     
                     Text("$\(item.price, specifier: "%.2f")")
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.gray)
                     
                     if !item.optionsSections.isEmpty {
                         Text("Customizable")
                             .font(.caption)
-                            .foregroundColor(.blue)
+                            .foregroundColor(.gray)
                     }
                 }
                 
                 Spacer()
                 
-                Image(systemName: "plus.circle.fill")
+                Image(systemName: "plus.circle")
                     .font(.title2)
-                    .foregroundColor(.blue)
+                    .foregroundColor(.black)
             }
             .padding()
-            .background(Color.gray.opacity(0.1))
-            .cornerRadius(12)
+            .background(Color.white)
         }
         .buttonStyle(PlainButtonStyle())
         .sheet(isPresented: $showingDetail) {
