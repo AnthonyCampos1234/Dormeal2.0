@@ -10,7 +10,21 @@ DormealApp is a modern iOS food delivery platform designed for college campuses.
 
 ## Screenshots
 
-[Screenshots coming soon]
+Here's a glimpse of Dormeal, with a LOT more in the codebase:
+
+<div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
+  <img src="DormealPics/IMG_3682.PNG" width="150" style="margin: 10px;"/>
+  <img src="DormealPics/IMG_3683.PNG" width="150" style="margin: 10px;"/>
+  <img src="DormealPics/IMG_3684.PNG" width="150" style="margin: 10px;"/>
+  <img src="DormealPics/IMG_3685.PNG" width="150" style="margin: 10px;"/>
+  <img src="DormealPics/IMG_3686.PNG" width="150" style="margin: 10px;"/>
+  <img src="DormealPics/IMG_3687.PNG" width="150" style="margin: 10px;"/>
+  <img src="DormealPics/IMG_3688.PNG" width="150" style="margin: 10px;"/>
+  <img src="DormealPics/IMG_3689.PNG" width="150" style="margin: 10px;"/>
+  <img src="DormealPics/IMG_3690.PNG" width="150" style="margin: 10px;"/>
+  <img src="DormealPics/IMG_3691.PNG" width="150" style="margin: 10px;"/>
+  <img src="DormealPics/IMG_3693.PNG" width="150" style="margin: 10px;"/>
+</div>
 
 ## Tech Stack & Tools
 
